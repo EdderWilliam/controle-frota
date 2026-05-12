@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Frota</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--blue:#1a56db;--blue-dark:#1240a0;--blue-light:#e8f0fe;--white:#ffffff;--gray:#f4f6fb;--border:#c7d7f5;--text:#1a2340;--muted:#6b7a99;--danger:#e53e3e;--success:#22a05b}
+  body{font-family:'Segoe UI',sans-serif;background:var(--gray);color:var(--text);min-height:100vh}
+  header{background:var(--blue);color:#fff;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;box-shadow:0 2px 8px #0003}
+  header h1{font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:8px}
+  #conn-status{font-size:.75rem;padding:4px 10px;border-radius:99px;background:#ffffff30}
+  nav{background:var(--blue-dark);display:flex;overflow-x:auto}
+  nav button{background:none;border:none;color:#ffffffcc;padding:12px 18px;cursor:pointer;font-size:.85rem;white-space:nowrap;border-bottom:3px solid transparent;transition:.2s}
+  nav button:hover{color:#fff;background:#ffffff15}
+  nav button.active{color:#fff;border-bottom-color:#fff;background:#ffffff15}
+  main{max-width:980px;margin:0 auto;padding:24px 16px}
+  .page{display:none}.page.active{display:block}
+  .card{background:var(--white);border-radius:12px;padding:20px;box-shadow:0 1px 6px #0001;margin-bottom:20px;border:1px solid var(--border)}
+  .card h2{font-size:1rem;color:var(--blue);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .form-group{display:flex;flex-direction:column;gap:5px}
+  .form-group.span2{grid-column:span 2}
+  label{font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  input,select,textarea{border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:.92rem;color:var(--text);background:var(--white);transition:border .2s;outline:none;width:100%}
+  input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+  input[readonly]{background:var(--gray);color:var(--muted)}
+  textarea{resize:vertical;min-height:70px}
+  .btn{padding:9px 20px;border-radius:8px;border:none;cursor:pointer;font-size:.9rem;font-weight:600;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-primary{background:var(--blue);color:#fff}.btn-primary:hover:not(:disabled){background:var(--blue-dark)}
+  .btn-danger{background:var(--danger);color:#fff}.btn-danger:hover:not(:disabled){background:#c53030}
+  .btn-success{background:var(--success);color:#fff}
+  .btn-sm{padding:5px 12px;font-size:.8rem}
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:.88rem}
+  th{background:var(--blue-light);color:var(--blue);font-weight:700;padding:10px 12px;text-align:left;border-bottom:2px solid var(--border)}
+  td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:var(--blue-light)}
+  .badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.75rem;font-weight:700}
+  .badge-out{background:#fff3cd;color:#856404}.badge-in{background:#d1e7dd;color:#0a5c36}
+  .photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+  .photo-slot{border:2px dashed var(--border);border-radius:8px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;background:var(--gray);transition:border .2s}
+  .photo-slot:hover{border-color:var(--blue)}
+  .photo-slot img{width:100%;height:100%;object-fit:cover;position:absolute}
+  .photo-slot span{font-size:.72rem;color:var(--muted);text-align:center;z-index:1;padding:4px}
+  .photo-slot .del-photo{position:absolute;top:4px;right:4px;background:#e53e3edd;color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:.75rem;cursor:pointer;z-index:2;display:none;align-items:center;justify-content:center}
+  .photo-slot:hover .del-photo{display:flex}
+  input[type=file]{display:none}
+  .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+  .stat-card{background:var(--blue);color:#fff;border-radius:12px;padding:16px;text-align:center}
+  .stat-card .num{font-size:2rem;font-weight:800}
+  .stat-card .lbl{font-size:.78rem;opacity:.85;margin-top:2px}
+  .filter-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:flex-end}
+  .filter-row .form-group{min-width:160px}
+  .modal-bg{display:none;position:fixed;inset:0;background:#0006;z-index:100;align-items:center;justify-content:center}
+  .modal-bg.open{display:flex}
+  .modal{background:var(--white);border-radius:14px;padding:24px;max-width:700px;width:95%;max-height:90vh;overflow-y:auto}
+  .modal h3{color:var(--blue);margin-bottom:16px;font-size:1.05rem}
+  .modal-actions{display:flex;gap:10px;margin-top:16px;justify-content:flex-end}
+  .section-divider{font-size:.78rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.8px;padding:6px 0 2px;border-bottom:1.5px solid var(--blue-light);margin:8px 0 4px;grid-column:span 2}
+  .empty{text-align:center;padding:40px;color:var(--muted);font-size:.95rem}
+  .empty span{font-size:2.5rem;display:block;margin-bottom:8px}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a2340;color:#fff;padding:12px 24px;border-radius:10px;font-size:.9rem;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
+  .toast.show{opacity:1}
+  .spinner{display:inline-block;width:16px;height:16px;border:2px solid #fff4;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .progress-bar{height:4px;background:var(--blue-light);border-radius:4px;margin-top:6px;overflow:hidden}
+  .progress-bar-fill{height:100%;background:var(--blue);width:0;transition:width .3s}
+  @media(max-width:600px){
+    .form-grid{grid-template-columns:1fr}
+    .form-group.span2{grid-column:span 1}
+    .section-divider{grid-column:span 1}
+    .photo-grid{grid-template-columns:repeat(2,1fr)}
+    .stats-row{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🚛 Controle de Frota</h1>
+  <span id="conn-status">⏳ Conectando...</span>
+</header>
+
+<nav>
+  <button class="active" onclick="showPage('dashboard')">🏠 Início</button>
+  <button onclick="showPage('checklist')">📋 Checklist</button>
+  <button onclick="showPage('motoristas')">👤 Motoristas</button>
+  <button onclick="showPage('veiculos')">🚗 Veículos</button>
+  <button onclick="showPage('relatorios')">📊 Relatórios</button>
+</nav>
+
+<main>
+
+  <!-- DASHBOARD -->
+  <div id="page-dashboard" class="page active">
+    <div class="stats-row">
+      <div class="stat-card"><div class="num" id="stat-total">—</div><div class="lbl">Total de Registros</div></div>
+      <div class="stat-card" style="background:var(--success)"><div class="num" id="stat-out">—</div><div class="lbl">Veículos Fora</div></div>
+      <div class="stat-card" style="background:var(--blue-dark)"><div class="num" id="stat-drivers">—</div><div class="lbl">Motoristas Cadastrados</div></div>
+    </div>
+    <div class="card">
+      <h2>📋 Últimos Registros</h2>
+      <div class="table-wrap"><table><thead><tr><th>Data/Hora</th><th>Veículo</th><th>Motorista</th><th>Atividade</th><th>Status</th></tr></thead><tbody id="dash-tbody"><tr><td colspan="5"><div class="empty"><span>⏳</span>Carregando...</div></td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div id="page-checklist" class="page">
+    <div class="card">
+      <h2>📋 Novo Checklist de Saída</h2>
+      <div class="form-grid">
+        <div class="section-divider">Identificação</div>
+        <div class="form-group"><label>Data</label><input type="date" id="cl-data"></div>
+        <div class="form-group"><label>Hora Saída</label><input type="time" id="cl-hora"></div>
+        <div class="form-group"><label>Veículo</label><select id="cl-veiculo"><option value="">Selecione...</option></select></div>
+        <div class="form-group"><label>Motorista Saída</label><select id="cl-motorista-saida"><option value="">Selecione...</option></select></div>
+        <div class="form-group span2"><label>Atividade</label>
+          <select id="cl-atividade">
+            <option value="">Selecione...</option>
+            <option>Rota de Entrega</option><option>Rota de Coleta</option>
+            <option>Oficina / Manutenção</option><option>Abastecimento</option>
+            <option>Viagem Interestadual</option><option>Transferência</option><option>Outros</option>
+          </select>
+        </div>
+        <div class="section-divider">Quilometragem</div>
+        <div class="form-group"><label>KM Saída</label><input type="number" id="cl-km-saida" placeholder="Ex: 12500" oninput="calcKM()"></div>
+        <div class="form-group"><label>KM Retorno</label><input type="number" id="cl-km-retorno" placeholder="Preencher no retorno" oninput="calcKM()"></div>
+        <div class="form-group"><label>KM Percorrido (auto)</label><input type="number" id="cl-km-percorrido" readonly></div>
+        <div class="form-group"><label>Hora Retorno</label><input type="time" id="cl-hora-retorno" oninput="calcTempo()"></div>
+        <div class="form-group span2"><label>Tempo Gasto (auto)</label><input type="text" id="cl-tempo" readonly></div>
+        <div class="section-divider">Retorno</div>
+        <div class="form-group span2"><label>Motorista Retorno</label><select id="cl-motorista-retorno"><option value="">Mesmo da saída</option></select></div>
+        <div class="section-divider">Fotos do Veículo</div>
+        <div class="form-group span2">
+          <label>Fotos (Frente, Traseira, Lateral Esq., Lateral Dir.)</label>
+          <div class="photo-grid" id="photo-grid">
+            <div class="photo-slot" onclick="triggerPhoto(0)"><input type="file" accept="image/*" onchange="loadPhoto(event,0)"><span>📷 Frente</span></div>
+            <div class="photo-slot" onclick="triggerPhoto(1)"><input type="file" accept="image/*" onchange="loadPhoto(event,1)"><span>📷 Traseira</span></div>
+            <div class="photo-slot" onclick="triggerPhoto(2)"><input type="file" accept="image/*" onchange="loadPhoto(event,2)"><span>📷 Lat. Esq.</span></div>
+            <div class="photo-slot" onclick="triggerPhoto(3)"><input type="file" accept="image/*" onchange="loadPhoto(event,3)"><span>📷 Lat. Dir.</span></div>
+          </div>
+          <div class="progress-bar" id="upload-progress" style="display:none"><div class="progress-bar-fill" id="upload-fill"></div></div>
+        </div>
+        <div class="section-divider">Observações</div>
+        <div class="form-group span2"><label>Observação de Saída</label><textarea id="cl-obs-saida" placeholder="Registre qualquer ocorrência na saída..."></textarea></div>
+        <div class="form-group span2"><label>Observação de Entrada / Retorno</label><textarea id="cl-obs-retorno" placeholder="Registre qualquer ocorrência no retorno..."></textarea></div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="btn-save-cl" onclick="saveChecklist()">💾 Salvar Registro</button>
+        <button class="btn" style="background:var(--gray);color:var(--muted)" onclick="clearChecklist()">🗑 Limpar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOTORISTAS -->
+  <div id="page-motoristas" class="page">
+    <div class="card">
+      <h2>👤 Cadastro de Motoristas</h2>
+      <div class="form-grid">
+        <div class="form-group"><label>ID</label><input type="text" id="mot-id" placeholder="Ex: M001"></div>
+        <div class="form-group"><label>Nome (apelido)</label><input type="text" id="mot-nome" placeholder="Ex: João"></div>
+        <div class="form-group span2"><label>Nome Completo</label><input type="text" id="mot-nomecompleto" placeholder="Ex: João da Silva Santos"></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn btn-primary" id="btn-save-mot" onclick="saveMotorista()">➕ Adicionar Motorista</button></div>
+    </div>
+    <div class="card">
+      <h2>📋 Motoristas Cadastrados</h2>
+      <div class="table-wrap"><table><thead><tr><th>ID</th><th>Nome</th><th>Nome Completo</th><th>Ações</th></tr></thead><tbody id="motoristas-tbody"><tr><td colspan="4"><div class="empty"><span>⏳</span>Carregando...</div></td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- VEÍCULOS -->
+  <div id="page-veiculos" class="page">
+    <div class="card">
+      <h2>🚗 Cadastro de Veículos</h2>
+      <div class="form-grid">
+        <div class="form-group"><label>ID</label><input type="text" id="vei-id" placeholder="Ex: V001"></div>
+        <div class="form-group"><label>Veículo (descrição)</label><input type="text" id="vei-nome" placeholder="Ex: Caminhão Truck"></div>
+        <div class="form-group span2"><label>Placa</label><input type="text" id="vei-placa" placeholder="Ex: ABC-1234" style="text-transform:uppercase"></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn btn-primary" id="btn-save-vei" onclick="saveVeiculo()">➕ Adicionar Veículo</button></div>
+    </div>
+    <div class="card">
+      <h2>📋 Veículos Cadastrados</h2>
+      <div class="table-wrap"><table><thead><tr><th>ID</th><th>Veículo</th><th>Placa</th><th>Ações</th></tr></thead><tbody id="veiculos-tbody"><tr><td colspan="4"><div class="empty"><span>⏳</span>Carregando...</div></td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- RELATÓRIOS -->
+  <div id="page-relatorios" class="page">
+    <div class="card">
+      <h2>🔍 Filtros</h2>
+      <div class="filter-row">
+        <div class="form-group"><label>Data Início</label><input type="date" id="f-inicio"></div>
+        <div class="form-group"><label>Data Fim</label><input type="date" id="f-fim"></div>
+        <div class="form-group"><label>Veículo</label><select id="f-veiculo"><option value="">Todos</option></select></div>
+        <div class="form-group"><label>Motorista</label><select id="f-motorista"><option value="">Todos</option></select></div>
+        <div style="display:flex;gap:8px;align-items:flex-end">
+          <button class="btn btn-primary btn-sm" onclick="renderRelatorios()">🔍 Filtrar</button>
+          <button class="btn btn-sm" style="background:var(--gray)" onclick="exportCSV()">⬇ CSV</button>
+          <button class="btn btn-sm" style="background:var(--gray)" onclick="window.print()">🖨 Imprimir</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>📊 Registros</h2>
+      <div class="table-wrap"><table><thead><tr><th>Data</th><th>Saída</th><th>Retorno</th><th>Veículo</th><th>Placa</th><th>Mot. Saída</th><th>Mot. Retorno</th><th>Atividade</th><th>KM Saída</th><th>KM Retorno</th><th>KM Perc.</th><th>Tempo</th><th>Status</th><th>Ações</th></tr></thead><tbody id="relatorios-tbody"></tbody></table></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3 id="modal-title">Detalhes do Registro</h3>
+    <div id="modal-body"></div>
+    <div class="modal-actions"><button class="btn" style="background:var(--gray)" onclick="closeModal()">Fechar</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCKGnw29ADhfce4SvSdcmwQlps6_idk_oU",
+  authDomain: "controle-frota-a332e.firebaseapp.com",
+  projectId: "controle-frota-a332e",
+  storageBucket: "controle-frota-a332e.firebasestorage.app",
+  messagingSenderId: "524544327634",
+  appId: "1:524544327634:web:2745afdf7f778c3541120b"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+document.getElementById('conn-status').textContent = '🟢 Conectado';
+
+// ─── STATE ────────────────────────────────────────────────
+let motoristas = [], veiculos = [], checklists = [];
+let photoFiles = {}; // slot -> File
+
+// ─── TOAST ────────────────────────────────────────────────
+function toast(msg, dur=3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+// ─── NAV ──────────────────────────────────────────────────
+window.showPage = function(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const map = {dashboard:0,checklist:1,motoristas:2,veiculos:3,relatorios:4};
+  document.querySelectorAll('nav button')[map[id]].classList.add('active');
+  if (id === 'checklist') populateSelects();
+  if (id === 'relatorios') { populateFilterSelects(); renderRelatorios(); }
+};
+
+// ─── REALTIME LISTENERS ───────────────────────────────────
+onSnapshot(query(collection(db,'motoristas'), orderBy('id')), snap => {
+  motoristas = snap.docs.map(d => ({_id: d.id, ...d.data()}));
+  renderMotoristas(); updateStats();
+});
+onSnapshot(query(collection(db,'veiculos'), orderBy('id')), snap => {
+  veiculos = snap.docs.map(d => ({_id: d.id, ...d.data()}));
+  renderVeiculos(); updateStats();
+});
+onSnapshot(query(collection(db,'checklists'), orderBy('createdAt','desc')), snap => {
+  checklists = snap.docs.map(d => ({_id: d.id, ...d.data()}));
+  renderDashboard(); updateStats();
+});
+
+// ─── STATS ────────────────────────────────────────────────
+function updateStats() {
+  document.getElementById('stat-total').textContent = checklists.length;
+  document.getElementById('stat-out').textContent = checklists.filter(c => !c.kmRetorno).length;
+  document.getElementById('stat-drivers').textContent = motoristas.length;
+}
+
+// ─── MOTORISTAS ───────────────────────────────────────────
+window.saveMotorista = async function() {
+  const id = document.getElementById('mot-id').value.trim();
+  const nome = document.getElementById('mot-nome').value.trim();
+  const nc = document.getElementById('mot-nomecompleto').value.trim();
+  if (!id||!nome||!nc) return toast('⚠️ Preencha todos os campos.');
+  if (motoristas.find(m => m.id === id)) return toast('⚠️ ID já cadastrado.');
+  const btn = document.getElementById('btn-save-mot');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Salvando...';
+  try {
+    await addDoc(collection(db,'motoristas'), {id, nome, nomecompleto: nc});
+    ['mot-id','mot-nome','mot-nomecompleto'].forEach(f => document.getElementById(f).value='');
+    toast('✅ Motorista cadastrado!');
+  } catch(e) { toast('❌ Erro: ' + e.message); }
+  btn.disabled=false; btn.innerHTML='➕ Adicionar Motorista';
+};
+window.deleteMotorista = async function(docId) {
+  if (!confirm('Remover motorista?')) return;
+  await deleteDoc(doc(db,'motoristas',docId));
+  toast('🗑 Motorista removido.');
+};
+function renderMotoristas() {
+  const tb = document.getElementById('motoristas-tbody');
+  if (!motoristas.length) { tb.innerHTML='<tr><td colspan="4"><div class="empty"><span>👤</span>Nenhum motorista cadastrado.</div></td></tr>'; return; }
+  tb.innerHTML = motoristas.map(m => `<tr><td><b>${m.id}</b></td><td>${m.nome}</td><td>${m.nomecompleto}</td><td><button class="btn btn-danger btn-sm" onclick="deleteMotorista('${m._id}')">🗑</button></td></tr>`).join('');
+}
+
+// ─── VEÍCULOS ─────────────────────────────────────────────
+window.saveVeiculo = async function() {
+  const id = document.getElementById('vei-id').value.trim();
+  const nome = document.getElementById('vei-nome').value.trim();
+  const placa = document.getElementById('vei-placa').value.trim().toUpperCase();
+  if (!id||!nome||!placa) return toast('⚠️ Preencha todos os campos.');
+  if (veiculos.find(v => v.id === id)) return toast('⚠️ ID já cadastrado.');
+  const btn = document.getElementById('btn-save-vei');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Salvando...';
+  try {
+    await addDoc(collection(db,'veiculos'), {id, nome, placa});
+    ['vei-id','vei-nome','vei-placa'].forEach(f => document.getElementById(f).value='');
+    toast('✅ Veículo cadastrado!');
+  } catch(e) { toast('❌ Erro: ' + e.message); }
+  btn.disabled=false; btn.innerHTML='➕ Adicionar Veículo';
+};
+window.deleteVeiculo = async function(docId) {
+  if (!confirm('Remover veículo?')) return;
+  await deleteDoc(doc(db,'veiculos',docId));
+  toast('🗑 Veículo removido.');
+};
+function renderVeiculos() {
+  const tb = document.getElementById('veiculos-tbody');
+  if (!veiculos.length) { tb.innerHTML='<tr><td colspan="4"><div class="empty"><span>🚗</span>Nenhum veículo cadastrado.</div></td></tr>'; return; }
+  tb.innerHTML = veiculos.map(v => `<tr><td><b>${v.id}</b></td><td>${v.nome}</td><td>${v.placa}</td><td><button class="btn btn-danger btn-sm" onclick="deleteVeiculo('${v._id}')">🗑</button></td></tr>`).join('');
+}
+
+// ─── SELECTS ──────────────────────────────────────────────
+function populateSelects() {
+  document.getElementById('cl-veiculo').innerHTML = '<option value="">Selecione...</option>' + veiculos.map(v=>`<option value="${v._id}">${v.nome} — ${v.placa}</option>`).join('');
+  const mOpts = '<option value="">Selecione...</option>' + motoristas.map(m=>`<option value="${m._id}">${m.nome} (${m.id})</option>`).join('');
+  document.getElementById('cl-motorista-saida').innerHTML = mOpts;
+  document.getElementById('cl-motorista-retorno').innerHTML = '<option value="">Mesmo da saída</option>' + motoristas.map(m=>`<option value="${m._id}">${m.nome} (${m.id})</option>`).join('');
+}
+function populateFilterSelects() {
+  document.getElementById('f-veiculo').innerHTML = '<option value="">Todos</option>' + veiculos.map(v=>`<option value="${v._id}">${v.nome} — ${v.placa}</option>`).join('');
+  document.getElementById('f-motorista').innerHTML = '<option value="">Todos</option>' + motoristas.map(m=>`<option value="${m._id}">${m.nome}</option>`).join('');
+}
+
+// ─── PHOTOS ───────────────────────────────────────────────
+window.triggerPhoto = i => document.querySelectorAll('.photo-slot input')[i].click();
+window.loadPhoto = function(e, i) {
+  const file = e.target.files[0]; if (!file) return;
+  photoFiles[i] = file;
+  const r = new FileReader();
+  r.onload = ev => {
+    const slot = document.querySelectorAll('.photo-slot')[i];
+    let img = slot.querySelector('img');
+    if (!img) { img = document.createElement('img'); slot.appendChild(img); }
+    img.src = ev.target.result;
+    slot.querySelector('span').style.display = 'none';
+    let del = slot.querySelector('.del-photo');
+    if (!del) {
+      del = document.createElement('button'); del.className='del-photo'; del.innerHTML='✕';
+      del.onclick = ev2 => { ev2.stopPropagation(); delete photoFiles[i]; img.remove(); del.remove(); slot.querySelector('span').style.display=''; };
+      slot.appendChild(del);
+    }
+  };
+  r.readAsDataURL(file);
+};
+
+async function uploadPhotos(checklistId) {
+  const urls = [];
+  const entries = Object.entries(photoFiles);
+  const labels = ['frente','traseira','lat-esq','lat-dir'];
+  const prog = document.getElementById('upload-progress');
+  const fill = document.getElementById('upload-fill');
+  if (entries.length) { prog.style.display='block'; }
+  for (let i=0; i<entries.length; i++) {
+    const [slot, file] = entries[i];
+    const storageRef = ref(storage, `checklists/${checklistId}/${labels[slot]}_${Date.now()}`);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    urls.push(url);
+    fill.style.width = `${((i+1)/entries.length)*100}%`;
+  }
+  prog.style.display='none'; fill.style.width='0';
+  return urls;
+}
+
+// ─── CALC ─────────────────────────────────────────────────
+window.calcKM = function() {
+  const s = +document.getElementById('cl-km-saida').value, r = +document.getElementById('cl-km-retorno').value;
+  document.getElementById('cl-km-percorrido').value = (s&&r&&r>=s) ? r-s : '';
+};
+window.calcTempo = function() {
+  const hs = document.getElementById('cl-hora').value, hr = document.getElementById('cl-hora-retorno').value;
+  if (!hs||!hr) { document.getElementById('cl-tempo').value=''; return; }
+  const [hh,mm]=hs.split(':').map(Number), [hh2,mm2]=hr.split(':').map(Number);
+  let diff=(hh2*60+mm2)-(hh*60+mm); if(diff<0) diff+=1440;
+  document.getElementById('cl-tempo').value=`${Math.floor(diff/60)}h ${diff%60}min`;
+};
+document.getElementById('cl-hora').addEventListener('input', window.calcTempo);
+
+// ─── CHECKLIST SAVE ───────────────────────────────────────
+window.saveChecklist = async function() {
+  const get = id => document.getElementById(id).value.trim();
+  const data=get('cl-data'),hora=get('cl-hora'),veiId=get('cl-veiculo'),motSId=get('cl-motorista-saida'),atv=get('cl-atividade'),kmS=get('cl-km-saida');
+  if (!data||!hora||!veiId||!motSId||!atv||!kmS) return toast('⚠️ Preencha os campos obrigatórios.');
+  const vei = veiculos.find(v=>v._id===veiId)||{};
+  const motS = motoristas.find(m=>m._id===motSId)||{};
+  const motRId = get('cl-motorista-retorno');
+  const motR = motRId ? motoristas.find(m=>m._id===motRId)||motS : motS;
+  const btn = document.getElementById('btn-save-cl');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Salvando...';
+  try {
+    const tempId = 'tmp_' + Date.now();
+    const fotoURLs = await uploadPhotos(tempId);
+    const rec = {
+      data, hora, createdAt: Date.now(),
+      veiculoId:veiId, veiculoNome:vei.nome||'', veiculoPlaca:vei.placa||'',
+      motoristaSaidaId:motSId, motoristaSaidaNome:motS.nome||'',
+      motoristaRetornoId:motR._id||motSId, motoristaRetornoNome:motR.nome||motS.nome||'',
+      atividade:atv,
+      kmSaida:get('cl-km-saida'), kmRetorno:get('cl-km-retorno'),
+      kmPercorrido:document.getElementById('cl-km-percorrido').value,
+      horaRetorno:get('cl-hora-retorno'), tempoGasto:document.getElementById('cl-tempo').value,
+      obsSaida:get('cl-obs-saida'), obsRetorno:get('cl-obs-retorno'),
+      fotos: fotoURLs
+    };
+    await addDoc(collection(db,'checklists'), rec);
+    toast('✅ Registro salvo com sucesso!');
+    clearChecklist();
+  } catch(e) { toast('❌ Erro ao salvar: ' + e.message); }
+  btn.disabled=false; btn.innerHTML='💾 Salvar Registro';
+};
+
+window.clearChecklist = function() {
+  ['cl-data','cl-hora','cl-km-saida','cl-km-retorno','cl-km-percorrido','cl-hora-retorno','cl-tempo','cl-obs-saida','cl-obs-retorno'].forEach(id=>document.getElementById(id).value='');
+  ['cl-veiculo','cl-motorista-saida','cl-atividade','cl-motorista-retorno'].forEach(id=>document.getElementById(id).selectedIndex=0);
+  photoFiles={};
+  const labels=['📷 Frente','📷 Traseira','📷 Lat. Esq.','📷 Lat. Dir.'];
+  document.querySelectorAll('.photo-slot').forEach((slot,i)=>{
+    const img=slot.querySelector('img'); if(img) img.remove();
+    const del=slot.querySelector('.del-photo'); if(del) del.remove();
+    slot.querySelector('span').style.display=''; slot.querySelector('span').textContent=labels[i];
+  });
+  const now=new Date();
+  document.getElementById('cl-data').value=now.toISOString().split('T')[0];
+  document.getElementById('cl-hora').value=now.toTimeString().slice(0,5);
+};
+
+// ─── DASHBOARD ────────────────────────────────────────────
+function renderDashboard() {
+  const tb = document.getElementById('dash-tbody');
+  const recent = checklists.slice(0,8);
+  if (!recent.length) { tb.innerHTML='<tr><td colspan="5"><div class="empty"><span>📋</span>Nenhum registro ainda.</div></td></tr>'; return; }
+  tb.innerHTML = recent.map(c=>`<tr>
+    <td>${c.data} ${c.hora}</td>
+    <td>${c.veiculoNome||''}<br><small style="color:var(--muted)">${c.veiculoPlaca||''}</small></td>
+    <td>${c.motoristaSaidaNome||''}</td><td>${c.atividade}</td>
+    <td><span class="badge ${c.kmRetorno?'badge-in':'badge-out'}">${c.kmRetorno?'Retornou':'Em saída'}</span></td>
+  </tr>`).join('');
+}
+
+// ─── RELATÓRIOS ───────────────────────────────────────────
+window.renderRelatorios = function() {
+  const fi=document.getElementById('f-inicio').value, ff=document.getElementById('f-fim').value;
+  const fv=document.getElementById('f-veiculo').value, fm=document.getElementById('f-motorista').value;
+  let data=[...checklists];
+  if(fi) data=data.filter(c=>c.data>=fi);
+  if(ff) data=data.filter(c=>c.data<=ff);
+  if(fv) data=data.filter(c=>c.veiculoId===fv);
+  if(fm) data=data.filter(c=>c.motoristaSaidaId===fm||c.motoristaRetornoId===fm);
+  const tb=document.getElementById('relatorios-tbody');
+  if(!data.length){tb.innerHTML='<tr><td colspan="14"><div class="empty"><span>📊</span>Nenhum registro encontrado.</div></td></tr>';return;}
+  tb.innerHTML=data.map(c=>`<tr>
+    <td>${c.data}</td><td>${c.hora}</td><td>${c.horaRetorno||'—'}</td>
+    <td>${c.veiculoNome||''}</td><td>${c.veiculoPlaca||''}</td>
+    <td>${c.motoristaSaidaNome||''}</td><td>${c.motoristaRetornoNome||''}</td>
+    <td>${c.atividade}</td><td>${c.kmSaida}</td><td>${c.kmRetorno||'—'}</td>
+    <td>${c.kmPercorrido||'—'}</td><td>${c.tempoGasto||'—'}</td>
+    <td><span class="badge ${c.kmRetorno?'badge-in':'badge-out'}">${c.kmRetorno?'Retornou':'Em saída'}</span></td>
+    <td style="display:flex;gap:4px">
+      <button class="btn btn-primary btn-sm" onclick="viewDetail('${c._id}')">👁</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteChecklist('${c._id}')">🗑</button>
+    </td>
+  </tr>`).join('');
+};
+
+window.deleteChecklist = async function(docId) {
+  if(!confirm('Remover registro?')) return;
+  await deleteDoc(doc(db,'checklists',docId));
+  toast('🗑 Registro removido.');
+  window.renderRelatorios();
+};
+
+window.viewDetail = function(docId) {
+  const c=checklists.find(r=>r._id===docId); if(!c) return;
+  document.getElementById('modal-title').textContent=`Registro — ${c.data} ${c.hora}`;
+  const fotos=(c.fotos||[]).map(url=>`<img src="${url}" style="width:100%;border-radius:8px;object-fit:cover">`).join('');
+  document.getElementById('modal-body').innerHTML=`
+    <div class="form-grid">
+      <div class="form-group"><label>Data</label><input readonly value="${c.data}"></div>
+      <div class="form-group"><label>Hora Saída</label><input readonly value="${c.hora}"></div>
+      <div class="form-group"><label>Veículo</label><input readonly value="${c.veiculoNome} — ${c.veiculoPlaca}"></div>
+      <div class="form-group"><label>Atividade</label><input readonly value="${c.atividade}"></div>
+      <div class="form-group"><label>Motorista Saída</label><input readonly value="${c.motoristaSaidaNome}"></div>
+      <div class="form-group"><label>Motorista Retorno</label><input readonly value="${c.motoristaRetornoNome}"></div>
+      <div class="form-group"><label>KM Saída</label><input readonly value="${c.kmSaida}"></div>
+      <div class="form-group"><label>KM Retorno</label><input readonly value="${c.kmRetorno||'—'}"></div>
+      <div class="form-group"><label>KM Percorrido</label><input readonly value="${c.kmPercorrido||'—'}"></div>
+      <div class="form-group"><label>Tempo Gasto</label><input readonly value="${c.tempoGasto||'—'}"></div>
+      <div class="form-group span2"><label>Obs. Saída</label><textarea readonly>${c.obsSaida||''}</textarea></div>
+      <div class="form-group span2"><label>Obs. Retorno</label><textarea readonly>${c.obsRetorno||''}</textarea></div>
+    </div>
+    ${c.fotos&&c.fotos.length?`<div style="margin-top:12px"><label style="font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase">Fotos</label><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px">${fotos}</div></div>`:''}
+  `;
+  document.getElementById('modal-bg').classList.add('open');
+};
+window.closeModal=()=>document.getElementById('modal-bg').classList.remove('open');
+
+// ─── CSV ──────────────────────────────────────────────────
+window.exportCSV = function() {
+  const cols=['Data','Hora Saída','Hora Retorno','Veículo','Placa','Mot. Saída','Mot. Retorno','Atividade','KM Saída','KM Retorno','KM Percorrido','Tempo Gasto','Obs. Saída','Obs. Retorno'];
+  const rows=checklists.map(c=>[c.data,c.hora,c.horaRetorno||'',c.veiculoNome||'',c.veiculoPlaca||'',c.motoristaSaidaNome||'',c.motoristaRetornoNome||'',c.atividade,c.kmSaida,c.kmRetorno||'',c.kmPercorrido||'',c.tempoGasto||'',c.obsSaida||'',c.obsRetorno||''].map(v=>`"${v}"`).join(','));
+  const csv=[cols.join(','),...rows].join('\n');
+  const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='controle_frota.csv'; a.click();
+};
+
+// ─── INIT ─────────────────────────────────────────────────
+(function init() {
+  const now=new Date();
+  document.getElementById('cl-data').value=now.toISOString().split('T')[0];
+  document.getElementById('cl-hora').value=now.toTimeString().slice(0,5);
+})();
+</script>
+</body>
+</html>
