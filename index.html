@@ -24,6 +24,9 @@ main{max-width:980px;margin:0 auto;padding:20px 14px}
 .form-group.span2{grid-column:span 2}
 label{font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
 input,select,textarea{border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:.92rem;color:var(--text);background:var(--white);transition:border .2s;outline:none;width:100%}
+.time-picker{display:flex;gap:6px;align-items:center}
+.time-picker select{width:auto;flex:1;text-align:center;font-size:1rem;padding:9px 4px}
+.time-picker span{font-size:1.2rem;font-weight:700;color:var(--blue)}
 input:focus,select:focus,textarea:focus{border-color:var(--blue)}
 input[readonly]{background:var(--gray);color:var(--muted)}
 textarea{resize:vertical;min-height:65px}
@@ -131,7 +134,13 @@ input[type=file]{display:none}
     <div class="form-grid">
       <div class="section-div">Identificação</div>
       <div class="form-group"><label>Data</label><input type="date" id="s-data"></div>
-      <div class="form-group"><label>Hora Saída</label><input type="time" id="s-hora"></div>
+      <div class="form-group"><label>Hora Saída</label>
+        <div class="time-picker">
+          <select id="s-hora-h"></select>
+          <span>:</span>
+          <select id="s-hora-m"></select>
+        </div>
+      </div>
       <div class="form-group"><label>Veículo</label><select id="s-veiculo" onchange="validateSaida()"><option value="">Selecione...</option></select></div>
       <div class="form-group"><label>Motorista Saída</label><select id="s-motorista" onchange="validateSaida()"><option value="">Selecione...</option></select></div>
       <div class="form-group span2"><label>Atividade</label>
@@ -185,7 +194,13 @@ input[type=file]{display:none}
       <div class="form-group"><label>Obs. Saída</label><input readonly id="e-obs-saida"></div>
       <div class="section-div">Dados do Retorno</div>
       <div class="form-group"><label>Data Retorno</label><input type="date" id="e-data"></div>
-      <div class="form-group"><label>Hora Retorno</label><input type="time" id="e-hora" oninput="calcEntrada()"></div>
+      <div class="form-group"><label>Hora Retorno</label>
+        <div class="time-picker">
+          <select id="e-hora-h" oninput="calcEntrada()"></select>
+          <span>:</span>
+          <select id="e-hora-m" oninput="calcEntrada()"></select>
+        </div>
+      </div>
       <div class="form-group"><label>KM Retorno</label><input type="number" id="e-km" placeholder="Ex: 12800" oninput="calcEntrada()"></div>
       <div class="form-group"><label>KM Percorrido (auto)</label><input readonly id="e-km-perc"></div>
       <div class="form-group span2"><label>Tempo Gasto (auto)</label><input readonly id="e-tempo"></div>
@@ -444,7 +459,7 @@ window.validateSaida=function(){
 // ─── SAVE SAÍDA ────────────────────────────────────────────
 window.saveSaida=async function(){
   const g=id=>document.getElementById(id).value.trim();
-  const data=g('s-data'),hora=g('s-hora'),veiId=g('s-veiculo'),motId=g('s-motorista'),atv=g('s-atividade'),km=g('s-km');
+  const data=g('s-data'),hora=getTime('s-hora-h','s-hora-m'),veiId=g('s-veiculo'),motId=g('s-motorista'),atv=g('s-atividade'),km=g('s-km');
   if(!data||!hora||!veiId||!motId||!atv||!km) return toast('⚠️ Preencha todos os campos obrigatórios.');
   const vei=veiculos.find(v=>v._id===veiId)||{};
   const mot=motoristas.find(m=>m._id===motId)||{};
@@ -472,13 +487,13 @@ window.saveSaida=async function(){
 };
 
 window.clearSaida=function(){
-  ['s-data','s-hora','s-km','s-obs'].forEach(id=>document.getElementById(id).value='');
+  ['s-data','s-km','s-obs'].forEach(id=>document.getElementById(id).value='');
   ['s-veiculo','s-motorista','s-atividade'].forEach(id=>document.getElementById(id).selectedIndex=0);
   sPhotos={};
   resetGrid('s-photo-grid');
   const now=new Date();
   document.getElementById('s-data').value=now.toISOString().split('T')[0];
-  document.getElementById('s-hora').value=now.toTimeString().slice(0,5);
+  setTime('s-hora-h','s-hora-m',now.toTimeString().slice(0,5));
   document.getElementById('saida-alert').style.display='none';
   document.getElementById('btn-save-saida').disabled=false;
 };
@@ -512,7 +527,7 @@ window.selectEntrada=function(docId){
   document.getElementById('e-obs-saida').value=c.obsSaida||'';
   const now=new Date();
   document.getElementById('e-data').value=now.toISOString().split('T')[0];
-  document.getElementById('e-hora').value=now.toTimeString().slice(0,5);
+  setTime('e-hora-h','e-hora-m',now.toTimeString().slice(0,5));
   document.getElementById('e-motorista-retorno').innerHTML=
     `<option value="">Mesmo da saída (${c.motoristaSaidaNome})</option>`+
     motoristas.map(m=>`<option value="${m._id}">${m.nome} (${m.id})</option>`).join('');
@@ -526,7 +541,7 @@ window.selectEntrada=function(docId){
 window.calcEntrada=function(){
   const kmS=+currentChecklist?.kmSaida||0, kmR=+document.getElementById('e-km').value||0;
   document.getElementById('e-km-perc').value=(kmS&&kmR&&kmR>=kmS)?kmR-kmS:'';
-  const hs=currentChecklist?.hora, hr=document.getElementById('e-hora').value;
+  const hs=currentChecklist?.hora, hr=getTime('e-hora-h','e-hora-m');
   if(hs&&hr){
     const [hh,mm]=hs.split(':').map(Number),[hh2,mm2]=hr.split(':').map(Number);
     let d=(hh2*60+mm2)-(hh*60+mm); if(d<0) d+=1440;
@@ -537,7 +552,7 @@ window.calcEntrada=function(){
 window.saveEntrada=async function(){
   if(!currentChecklist) return;
   const g=id=>document.getElementById(id).value.trim();
-  const dataR=g('e-data'),horaR=g('e-hora'),kmR=g('e-km');
+  const dataR=g('e-data'),horaR=getTime('e-hora-h','e-hora-m'),kmR=g('e-km');
   if(!dataR||!horaR||!kmR) return toast('⚠️ Preencha Data, Hora e KM de Retorno.');
   const motRId=g('e-motorista-retorno');
   const motR=motRId?motoristas.find(m=>m._id===motRId)||{}:{nome:currentChecklist.motoristaSaidaNome,_id:currentChecklist.motoristaSaidaId};
@@ -707,7 +722,20 @@ function resetGrid(gridId){
   });
 }
 
-// ─── INIT ──────────────────────────────────────────────────
+// ─── TIME PICKER SETUP ─────────────────────────────────────
+function buildTimePicker(hId, mId){
+  const hSel=document.getElementById(hId), mSel=document.getElementById(mId);
+  for(let i=0;i<24;i++) hSel.innerHTML+=`<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`;
+  for(let i=0;i<60;i+=1) mSel.innerHTML+=`<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`;
+}
+function getTime(hId,mId){return document.getElementById(hId).value+':'+document.getElementById(mId).value;}
+function setTime(hId,mId,timeStr){
+  if(!timeStr) return;
+  const [h,m]=timeStr.split(':');
+  document.getElementById(hId).value=h;
+  document.getElementById(mId).value=m;
+}
+
 (function(){
   const now=new Date();
   document.getElementById('s-data').value=now.toISOString().split('T')[0];
