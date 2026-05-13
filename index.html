@@ -345,7 +345,7 @@ window.showPage=function(id){
   document.getElementById('page-'+id).classList.add('active');
   const map={dashboard:0,saida:1,entrada:2,motoristas:3,veiculos:4,relatorios:5};
   document.querySelectorAll('nav button')[map[id]].classList.add('active');
-  if(id==='saida'){populateSaidaSelects();validateSaida();}
+  if(id==='saida'){populateSaidaSelects();validateSaida();setTimeout(()=>{populateSaidaSelects();validateSaida();},800);}
   if(id==='entrada') renderEntradaLista();
   if(id==='relatorios'){populateFilterSelects();renderRelatorios();}
 };
@@ -355,10 +355,13 @@ onSnapshot(query(collection(db,'motoristas'),orderBy('id')),snap=>{
   motoristas=snap.docs.map(d=>({_id:d.id,...d.data()}));
   renderMotoristas();
   document.getElementById('stat-drivers').textContent=motoristas.length;
+  // atualiza selects se a página de saída estiver visível
+  if(document.getElementById('page-saida').classList.contains('active')) populateSaidaSelects();
 });
 onSnapshot(query(collection(db,'veiculos'),orderBy('id')),snap=>{
   veiculos=snap.docs.map(d=>({_id:d.id,...d.data()}));
   renderVeiculos();
+  if(document.getElementById('page-saida').classList.contains('active')) populateSaidaSelects();
 });
 onSnapshot(query(collection(db,'checklists'),orderBy('createdAt','desc')),snap=>{
   checklists=snap.docs.map(d=>({_id:d.id,...d.data()}));
