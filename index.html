@@ -270,7 +270,7 @@ input[type=file]{display:none}
   </div>
   <div class="card">
     <h2>📊 Registros</h2>
-    <div class="table-wrap"><table><thead><tr><th>Data</th><th>Saída</th><th>Retorno</th><th>Veículo</th><th>Placa</th><th>Mot. Saída</th><th>Mot. Retorno</th><th>Atividade</th><th>KM S.</th><th>KM R.</th><th>KM Perc.</th><th>Tempo</th><th>Status</th><th>Ações</th></tr></thead><tbody id="rel-tbody"></tbody></table></div>
+    <div class="table-wrap"><table><thead><tr><th>Data</th><th>Saída</th><th>Retorno</th><th>Veículo</th><th>Placa</th><th>Mot. Saída</th><th>Mot. Retorno</th><th>Atividade</th><th>KM S.</th><th>KM R.</th><th>KM Perc.</th><th>Tempo</th><th>Obs. Saída</th><th>Obs. Entrada</th><th>Status</th><th>Ações</th></tr></thead><tbody id="rel-tbody"></tbody></table></div>
   </div>
 </div>
 
@@ -659,6 +659,8 @@ window.renderRelatorios=function(){
     <td>${c.motoristaSaidaNome}</td><td>${c.motoristaRetornoNome||'—'}</td>
     <td>${c.atividade}</td><td>${c.kmSaida}</td><td>${c.kmRetorno||'—'}</td>
     <td>${c.kmPercorrido||'—'}</td><td>${c.tempoGasto||'—'}</td>
+    <td style="max-width:140px;white-space:pre-wrap;word-break:break-word">${c.obsSaida||'—'}</td>
+    <td style="max-width:140px;white-space:pre-wrap;word-break:break-word">${c.obsRetorno||'—'}</td>
     <td><span class="badge ${c.retornou?'badge-in':'badge-out'}">${c.retornou?'Retornou':'Em saída'}</span></td>
     <td style="display:flex;gap:4px">
       <button class="btn btn-primary btn-sm" onclick="viewDetail('${c._id}')">👁</button>
