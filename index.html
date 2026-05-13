@@ -136,9 +136,13 @@ input[type=file]{display:none}
       <div class="form-group"><label>Data</label><input type="date" id="s-data"></div>
       <div class="form-group"><label>Hora Saída</label>
         <div class="time-picker">
-          <select id="s-hora-h"></select>
+          <select id="s-hora-h">
+            <script>for(let i=0;i<24;i++) document.write(`<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`);</script>
+          </select>
           <span>:</span>
-          <select id="s-hora-m"></select>
+          <select id="s-hora-m">
+            <script>for(let i=0;i<60;i++) document.write(`<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`);</script>
+          </select>
         </div>
       </div>
       <div class="form-group"><label>Veículo</label><select id="s-veiculo" onchange="validateSaida()"><option value="">Selecione...</option></select></div>
@@ -196,9 +200,13 @@ input[type=file]{display:none}
       <div class="form-group"><label>Data Retorno</label><input type="date" id="e-data"></div>
       <div class="form-group"><label>Hora Retorno</label>
         <div class="time-picker">
-          <select id="e-hora-h" oninput="calcEntrada()"></select>
+          <select id="e-hora-h" oninput="calcEntrada()">
+            <script>for(let i=0;i<24;i++) document.write(`<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`);</script>
+          </select>
           <span>:</span>
-          <select id="e-hora-m" oninput="calcEntrada()"></select>
+          <select id="e-hora-m" oninput="calcEntrada()">
+            <script>for(let i=0;i<60;i++) document.write(`<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`);</script>
+          </select>
         </div>
       </div>
       <div class="form-group"><label>KM Retorno</label><input type="number" id="e-km" placeholder="Ex: 12800" oninput="calcEntrada()"></div>
@@ -723,11 +731,6 @@ function resetGrid(gridId){
 }
 
 // ─── TIME PICKER SETUP ─────────────────────────────────────
-function buildTimePicker(hId, mId){
-  const hSel=document.getElementById(hId), mSel=document.getElementById(mId);
-  for(let i=0;i<24;i++) hSel.innerHTML+=`<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`;
-  for(let i=0;i<60;i+=1) mSel.innerHTML+=`<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`;
-}
 function getTime(hId,mId){return document.getElementById(hId).value+':'+document.getElementById(mId).value;}
 function setTime(hId,mId,timeStr){
   if(!timeStr) return;
