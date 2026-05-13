@@ -32,7 +32,6 @@ textarea{resize:vertical;min-height:65px}
 .btn-primary{background:var(--blue);color:#fff}.btn-primary:hover:not(:disabled){background:var(--blue-dark)}
 .btn-success{background:var(--success);color:#fff}.btn-success:hover:not(:disabled){background:#1a7a42}
 .btn-danger{background:var(--danger);color:#fff}.btn-danger:hover:not(:disabled){background:#c53030}
-.btn-warn{background:var(--warn);color:#fff}
 .btn-sm{padding:5px 11px;font-size:.78rem}
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:.86rem}
@@ -43,29 +42,24 @@ tr:hover td{background:var(--blue-light)}
 .badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.73rem;font-weight:700}
 .badge-out{background:#fff3cd;color:#856404}
 .badge-in{background:#d1e7dd;color:#0a5c36}
-/* PHOTO */
-.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.photo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
 .photo-slot{border:2px dashed var(--border);border-radius:8px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;background:var(--gray);transition:border .2s}
 .photo-slot:hover{border-color:var(--blue)}
 .photo-slot img{width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0}
-.photo-slot span{font-size:.68rem;color:var(--muted);text-align:center;z-index:1;padding:4px;line-height:1.3}
+.photo-slot span{font-size:.65rem;color:var(--muted);text-align:center;z-index:1;padding:3px;line-height:1.3}
 .photo-slot .del-ph{position:absolute;top:3px;right:3px;background:#e53e3ecc;color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:.7rem;cursor:pointer;z-index:2;display:none;align-items:center;justify-content:center}
 .photo-slot:hover .del-ph{display:flex}
 input[type=file]{display:none}
-/* CAMERA MODAL */
-.cam-modal{display:none;position:fixed;inset:0;background:#000;z-index:200;flex-direction:column;align-items:center;justify-content:center}
+.cam-modal{display:none;position:fixed;inset:0;background:#000;z-index:200;flex-direction:column;align-items:center;justify-content:center;padding:16px}
 .cam-modal.open{display:flex}
-#cam-video{width:100%;max-height:75vh;object-fit:cover;border-radius:8px}
-.cam-actions{display:flex;gap:16px;margin-top:16px}
-/* STATS */
+#cam-video{width:100%;max-height:72vh;object-fit:cover;border-radius:10px}
+.cam-actions{display:flex;gap:16px;margin-top:14px}
 .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
 .stat-card{background:var(--blue);color:#fff;border-radius:12px;padding:16px;text-align:center}
 .stat-card .num{font-size:2rem;font-weight:800}
 .stat-card .lbl{font-size:.76rem;opacity:.85;margin-top:2px}
-/* FILTERS */
 .filter-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:flex-end}
 .filter-row .form-group{min-width:150px}
-/* MODAL */
 .modal-bg{display:none;position:fixed;inset:0;background:#0006;z-index:100;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
 .modal{background:var(--white);border-radius:14px;padding:22px;max-width:700px;width:95%;max-height:90vh;overflow-y:auto}
@@ -78,21 +72,19 @@ input[type=file]{display:none}
 .toast.show{opacity:1}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid #fff4;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.prog{height:4px;background:var(--blue-light);border-radius:4px;margin-top:6px;overflow:hidden;display:none}
-.prog-fill{height:100%;background:var(--blue);width:0;transition:width .3s}
-/* VEHICLE CARD for entrada */
-.vei-card{border:2px solid var(--border);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;background:var(--white);transition:border .2s}
-.vei-card:hover{border-color:var(--blue)}
-.vei-card .info{display:flex;flex-direction:column;gap:3px}
-.vei-card .info strong{font-size:.95rem;color:var(--text)}
-.vei-card .info small{color:var(--muted);font-size:.8rem}
 .alert-box{background:#fff3cd;border:1.5px solid #f0c040;border-radius:8px;padding:12px 16px;font-size:.88rem;color:#856404;margin-bottom:14px}
+.vei-card{border:2px solid var(--border);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;background:var(--white)}
+.vei-card .info{display:flex;flex-direction:column;gap:3px}
+.vei-card .info strong{font-size:.95rem}
+.vei-card .info small{color:var(--muted);font-size:.8rem}
+.compress-info{font-size:.75rem;color:var(--muted);margin-top:4px}
 @media(max-width:600px){
   .form-grid{grid-template-columns:1fr}
   .form-group.span2{grid-column:span 1}
   .section-div{grid-column:span 1}
-  .photo-grid{grid-template-columns:repeat(2,1fr)}
+  .photo-grid{grid-template-columns:repeat(3,1fr)}
   .stats-row{grid-template-columns:1fr}
+  .vei-card{flex-direction:column;align-items:flex-start;gap:10px}
 }
 </style>
 </head>
@@ -154,14 +146,15 @@ input[type=file]{display:none}
       <div class="form-group span2"><label>KM Saída</label><input type="number" id="s-km" placeholder="Ex: 12500"></div>
       <div class="section-div">Fotos de Saída</div>
       <div class="form-group span2">
-        <label>Fotos do Veículo (toque para abrir câmera)</label>
+        <label>Toque em cada slot para abrir a câmera</label>
         <div class="photo-grid" id="s-photo-grid">
-          <div class="photo-slot" onclick="openCamera('s',0)"><span>📷<br>Frente</span></div>
-          <div class="photo-slot" onclick="openCamera('s',1)"><span>📷<br>Traseira</span></div>
-          <div class="photo-slot" onclick="openCamera('s',2)"><span>📷<br>Lat. Esq.</span></div>
-          <div class="photo-slot" onclick="openCamera('s',3)"><span>📷<br>Lat. Dir.</span></div>
+          <div class="photo-slot" onclick="openCamera('s',0)"><span>📷 Frente</span></div>
+          <div class="photo-slot" onclick="openCamera('s',1)"><span>📷 Traseira</span></div>
+          <div class="photo-slot" onclick="openCamera('s',2)"><span>📷 Lat. Esq.</span></div>
+          <div class="photo-slot" onclick="openCamera('s',3)"><span>📷 Lat. Dir.</span></div>
+          <div class="photo-slot" onclick="openCamera('s',4)"><span>📷 Cabine</span></div>
         </div>
-        <div class="prog" id="s-prog"><div class="prog-fill" id="s-fill"></div></div>
+        <div class="compress-info">📌 Fotos são comprimidas automaticamente para economizar espaço.</div>
       </div>
       <div class="section-div">Observações</div>
       <div class="form-group span2"><label>Observação de Saída</label><textarea id="s-obs" placeholder="Registre qualquer ocorrência..."></textarea></div>
@@ -179,11 +172,10 @@ input[type=file]{display:none}
     <h2>🏁 Veículos Aguardando Retorno</h2>
     <div id="entrada-lista"></div>
   </div>
-  <!-- FORM ENTRADA (oculto até selecionar veículo) -->
   <div class="card" id="entrada-form-card" style="display:none">
     <h2>🏁 Registrar Entrada — <span id="e-titulo"></span></h2>
     <div class="form-grid">
-      <div class="section-div">Dados da Saída (preenchidos automaticamente)</div>
+      <div class="section-div">Dados da Saída (automático)</div>
       <div class="form-group"><label>Data Saída</label><input readonly id="e-data-saida"></div>
       <div class="form-group"><label>Hora Saída</label><input readonly id="e-hora-saida"></div>
       <div class="form-group"><label>Veículo</label><input readonly id="e-veiculo-nome"></div>
@@ -200,14 +192,14 @@ input[type=file]{display:none}
       <div class="form-group span2"><label>Motorista Retorno</label><select id="e-motorista-retorno"><option value="">Mesmo da saída</option></select></div>
       <div class="section-div">Fotos de Entrada</div>
       <div class="form-group span2">
-        <label>Fotos do Veículo no Retorno</label>
+        <label>Toque em cada slot para abrir a câmera</label>
         <div class="photo-grid" id="e-photo-grid">
-          <div class="photo-slot" onclick="openCamera('e',0)"><span>📷<br>Frente</span></div>
-          <div class="photo-slot" onclick="openCamera('e',1)"><span>📷<br>Traseira</span></div>
-          <div class="photo-slot" onclick="openCamera('e',2)"><span>📷<br>Lat. Esq.</span></div>
-          <div class="photo-slot" onclick="openCamera('e',3)"><span>📷<br>Lat. Dir.</span></div>
+          <div class="photo-slot" onclick="openCamera('e',0)"><span>📷 Frente</span></div>
+          <div class="photo-slot" onclick="openCamera('e',1)"><span>📷 Traseira</span></div>
+          <div class="photo-slot" onclick="openCamera('e',2)"><span>📷 Lat. Esq.</span></div>
+          <div class="photo-slot" onclick="openCamera('e',3)"><span>📷 Lat. Dir.</span></div>
+          <div class="photo-slot" onclick="openCamera('e',4)"><span>📷 Cabine</span></div>
         </div>
-        <div class="prog" id="e-prog"><div class="prog-fill" id="e-fill"></div></div>
       </div>
       <div class="section-div">Observações</div>
       <div class="form-group span2"><label>Observação de Entrada / Retorno</label><textarea id="e-obs" placeholder="Registre qualquer ocorrência no retorno..."></textarea></div>
@@ -288,9 +280,9 @@ input[type=file]{display:none}
 
 <!-- CAMERA MODAL -->
 <div class="cam-modal" id="cam-modal">
-  <video id="cam-video" autoplay playsinline></video>
+  <video id="cam-video" autoplay playsinline muted></video>
   <div class="cam-actions">
-    <button class="btn btn-primary" onclick="capturePhoto()">📸 Tirar Foto</button>
+    <button class="btn btn-primary" style="font-size:1rem;padding:12px 28px" onclick="capturePhoto()">📸 Tirar Foto</button>
     <button class="btn btn-danger" onclick="closeCamera()">✕ Cancelar</button>
   </div>
   <canvas id="cam-canvas" style="display:none"></canvas>
@@ -300,8 +292,7 @@ input[type=file]{display:none}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const cfg = {
   apiKey:"AIzaSyCKGnw29ADhfce4SvSdcmwQlps6_idk_oU",
@@ -313,23 +304,41 @@ const cfg = {
 };
 const app = initializeApp(cfg);
 const db = getFirestore(app);
-const storage = getStorage(app);
 document.getElementById('conn-status').textContent = '🟢 Conectado';
 
-// ─── STATE ────────────────────────────────────────────────
+// ─── STATE ─────────────────────────────────────────────────
 let motoristas=[], veiculos=[], checklists=[];
-let sPhotos={}, ePhotos={};           // slot->blob
-let currentChecklist=null;            // registro de saída selecionado para entrada
+let sPhotos={}, ePhotos={}; // slot -> base64 string
+let currentChecklist=null;
 let camStream=null, camCtx='s', camSlot=0;
 
-// ─── TOAST ────────────────────────────────────────────────
+const PHOTO_LABELS = ['📷 Frente','📷 Traseira','📷 Lat. Esq.','📷 Lat. Dir.','📷 Cabine'];
+
+// ─── TOAST ─────────────────────────────────────────────────
 function toast(msg,dur=3500){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),dur);
 }
 
-// ─── NAV ──────────────────────────────────────────────────
+// ─── COMPRESS IMAGE ────────────────────────────────────────
+function compressImage(blob, maxW=800, quality=0.65){
+  return new Promise(resolve=>{
+    const img=new Image(), url=URL.createObjectURL(blob);
+    img.onload=()=>{
+      let w=img.width, h=img.height;
+      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+      const c=document.createElement('canvas');
+      c.width=w; c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL('image/jpeg',quality));
+    };
+    img.src=url;
+  });
+}
+
+// ─── NAV ───────────────────────────────────────────────────
 window.showPage=function(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
@@ -337,14 +346,15 @@ window.showPage=function(id){
   const map={dashboard:0,saida:1,entrada:2,motoristas:3,veiculos:4,relatorios:5};
   document.querySelectorAll('nav button')[map[id]].classList.add('active');
   if(id==='saida'){populateSaidaSelects();validateSaida();}
-  if(id==='entrada'){renderEntradaLista();}
+  if(id==='entrada') renderEntradaLista();
   if(id==='relatorios'){populateFilterSelects();renderRelatorios();}
 };
 
-// ─── REALTIME ─────────────────────────────────────────────
+// ─── REALTIME ──────────────────────────────────────────────
 onSnapshot(query(collection(db,'motoristas'),orderBy('id')),snap=>{
   motoristas=snap.docs.map(d=>({_id:d.id,...d.data()}));
   renderMotoristas();
+  document.getElementById('stat-drivers').textContent=motoristas.length;
 });
 onSnapshot(query(collection(db,'veiculos'),orderBy('id')),snap=>{
   veiculos=snap.docs.map(d=>({_id:d.id,...d.data()}));
@@ -353,134 +363,108 @@ onSnapshot(query(collection(db,'veiculos'),orderBy('id')),snap=>{
 onSnapshot(query(collection(db,'checklists'),orderBy('createdAt','desc')),snap=>{
   checklists=snap.docs.map(d=>({_id:d.id,...d.data()}));
   renderDashboard();
-  updateStats();
+  document.getElementById('stat-total').textContent=checklists.length;
+  document.getElementById('stat-out').textContent=checklists.filter(c=>!c.retornou).length;
   if(document.getElementById('page-entrada').classList.contains('active')) renderEntradaLista();
 });
 
-// ─── STATS ────────────────────────────────────────────────
-function updateStats(){
-  document.getElementById('stat-total').textContent=checklists.length;
-  document.getElementById('stat-out').textContent=checklists.filter(c=>!c.retornou).length;
-  document.getElementById('stat-drivers').textContent=motoristas.length;
-}
-
-// ─── CAMERA ───────────────────────────────────────────────
+// ─── CAMERA ────────────────────────────────────────────────
 window.openCamera=async function(ctx,slot){
   camCtx=ctx; camSlot=slot;
   try{
-    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}},audio:false});
     document.getElementById('cam-video').srcObject=camStream;
     document.getElementById('cam-modal').classList.add('open');
   }catch(e){
-    // fallback: file input
-    const input=document.createElement('input');
-    input.type='file'; input.accept='image/*'; input.capture='environment';
-    input.onchange=ev=>handlePhotoFile(ev.target.files[0],ctx,slot);
-    input.click();
+    // fallback file input
+    const inp=document.createElement('input');
+    inp.type='file'; inp.accept='image/*'; inp.capture='environment';
+    inp.onchange=async ev=>{
+      const file=ev.target.files[0]; if(!file) return;
+      const b64=await compressImage(file);
+      setPhoto(ctx,slot,b64);
+    };
+    inp.click();
   }
 };
+
 window.capturePhoto=function(){
   const video=document.getElementById('cam-video');
   const canvas=document.getElementById('cam-canvas');
   canvas.width=video.videoWidth; canvas.height=video.videoHeight;
   canvas.getContext('2d').drawImage(video,0,0);
-  canvas.toBlob(blob=>{
-    handlePhotoFile(blob,camCtx,camSlot);
+  canvas.toBlob(async blob=>{
+    const b64=await compressImage(blob);
+    setPhoto(camCtx,camSlot,b64);
     closeCamera();
-  },'image/jpeg',0.85);
+  },'image/jpeg',0.9);
 };
+
 window.closeCamera=function(){
   if(camStream) camStream.getTracks().forEach(t=>t.stop());
   camStream=null;
   document.getElementById('cam-modal').classList.remove('open');
 };
-function handlePhotoFile(file,ctx,slot){
-  if(!file) return;
-  if(ctx==='s') sPhotos[slot]=file; else ePhotos[slot]=file;
+
+function setPhoto(ctx,slot,b64){
+  if(ctx==='s') sPhotos[slot]=b64; else ePhotos[slot]=b64;
   const gridId=ctx==='s'?'s-photo-grid':'e-photo-grid';
-  const slot_el=document.querySelectorAll('#'+gridId+' .photo-slot')[slot];
-  const url=URL.createObjectURL(file);
-  let img=slot_el.querySelector('img');
-  if(!img){img=document.createElement('img');slot_el.appendChild(img);}
-  img.src=url;
-  slot_el.querySelector('span').style.display='none';
-  let del=slot_el.querySelector('.del-ph');
+  const slotEl=document.querySelectorAll('#'+gridId+' .photo-slot')[slot];
+  let img=slotEl.querySelector('img');
+  if(!img){img=document.createElement('img');slotEl.appendChild(img);}
+  img.src=b64;
+  slotEl.querySelector('span').style.display='none';
+  let del=slotEl.querySelector('.del-ph');
   if(!del){
     del=document.createElement('button');del.className='del-ph';del.innerHTML='✕';
     del.onclick=ev=>{ev.stopPropagation();
       if(ctx==='s') delete sPhotos[slot]; else delete ePhotos[slot];
-      img.remove();del.remove();slot_el.querySelector('span').style.display='';
+      img.remove();del.remove();slotEl.querySelector('span').style.display='';
     };
-    slot_el.appendChild(del);
+    slotEl.appendChild(del);
   }
 }
 
-// ─── UPLOAD PHOTOS ────────────────────────────────────────
-async function uploadPhotos(photoMap,folder,progId,fillId){
-  const urls=[];
-  const entries=Object.entries(photoMap);
-  const prog=document.getElementById(progId), fill=document.getElementById(fillId);
-  if(entries.length) prog.style.display='block';
-  for(let i=0;i<entries.length;i++){
-    const [slot,file]=entries[i];
-    const r=ref(storage,`${folder}/slot${slot}_${Date.now()}`);
-    await uploadBytes(r,file);
-    urls.push(await getDownloadURL(r));
-    fill.style.width=`${((i+1)/entries.length)*100}%`;
-  }
-  prog.style.display='none'; fill.style.width='0';
-  return urls;
-}
-
-// ─── VALIDATE SAÍDA ───────────────────────────────────────
+// ─── VALIDATE SAÍDA ────────────────────────────────────────
 window.validateSaida=function(){
   const veiId=document.getElementById('s-veiculo').value;
   const motId=document.getElementById('s-motorista').value;
-  const alert=document.getElementById('saida-alert');
+  const alertEl=document.getElementById('saida-alert');
   const btn=document.getElementById('btn-save-saida');
   const msgs=[];
-  if(veiId){
-    const emSaida=checklists.find(c=>c.veiculoId===veiId&&!c.retornou);
-    if(emSaida) msgs.push(`⚠️ Veículo já está em saída desde ${emSaida.data} às ${emSaida.hora}. Registre a entrada antes de nova saída.`);
-  }
-  if(motId){
-    const emSaida=checklists.find(c=>c.motoristaSaidaId===motId&&!c.retornou);
-    if(emSaida) msgs.push(`⚠️ Motorista já está em uma saída (${emSaida.veiculoNome}) sem retorno registrado.`);
-  }
-  if(msgs.length){
-    alert.style.display='block'; alert.innerHTML=msgs.join('<br>');
-    btn.disabled=true;
-  } else {
-    alert.style.display='none';
-    btn.disabled=false;
-  }
+  if(veiId){const em=checklists.find(c=>c.veiculoId===veiId&&!c.retornou);if(em) msgs.push(`⚠️ Veículo em saída desde ${em.data} às ${em.hora}. Registre a entrada primeiro.`);}
+  if(motId){const em=checklists.find(c=>c.motoristaSaidaId===motId&&!c.retornou);if(em) msgs.push(`⚠️ Motorista já está fora com ${em.veiculoNome} sem retorno.`);}
+  if(msgs.length){alertEl.style.display='block';alertEl.innerHTML=msgs.join('<br>');btn.disabled=true;}
+  else{alertEl.style.display='none';btn.disabled=false;}
 };
 
-// ─── SAVE SAÍDA ───────────────────────────────────────────
+// ─── SAVE SAÍDA ────────────────────────────────────────────
 window.saveSaida=async function(){
-  const get=id=>document.getElementById(id).value.trim();
-  const data=get('s-data'),hora=get('s-hora'),veiId=get('s-veiculo'),motId=get('s-motorista'),atv=get('s-atividade'),km=get('s-km');
+  const g=id=>document.getElementById(id).value.trim();
+  const data=g('s-data'),hora=g('s-hora'),veiId=g('s-veiculo'),motId=g('s-motorista'),atv=g('s-atividade'),km=g('s-km');
   if(!data||!hora||!veiId||!motId||!atv||!km) return toast('⚠️ Preencha todos os campos obrigatórios.');
   const vei=veiculos.find(v=>v._id===veiId)||{};
   const mot=motoristas.find(m=>m._id===motId)||{};
   const btn=document.getElementById('btn-save-saida');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Salvando...';
   try{
-    const tempId='saida_'+Date.now();
-    const fotos=await uploadPhotos(sPhotos,`checklists/${tempId}/saida`,'s-prog','s-fill');
+    // fotos já são base64 comprimidas
+    const fotosSaida=Object.values(sPhotos);
     await addDoc(collection(db,'checklists'),{
       data,hora,createdAt:Date.now(),retornou:false,
       veiculoId:veiId,veiculoNome:vei.nome||'',veiculoPlaca:vei.placa||'',
       motoristaSaidaId:motId,motoristaSaidaNome:mot.nome||'',
-      atividade:atv,kmSaida:km,obsSaida:get('s-obs'),
-      fotosSaida:fotos,
-      // retorno fields (vazios)
+      atividade:atv,kmSaida:km,obsSaida:g('s-obs'),
+      fotosSaida,
       horaRetorno:'',kmRetorno:'',kmPercorrido:'',tempoGasto:'',
       motoristaRetornoId:'',motoristaRetornoNome:'',obsRetorno:'',fotosEntrada:[]
     });
-    toast('✅ Saída registrada!');
+    toast('✅ Saída registrada com sucesso!');
     clearSaida();
-  }catch(e){toast('❌ Erro: '+e.message);}
+  }catch(e){
+    console.error(e);
+    toast('❌ Erro ao salvar: '+e.message);
+  }
   btn.disabled=false; btn.innerHTML='🚦 Registrar Saída';
 };
 
@@ -488,7 +472,7 @@ window.clearSaida=function(){
   ['s-data','s-hora','s-km','s-obs'].forEach(id=>document.getElementById(id).value='');
   ['s-veiculo','s-motorista','s-atividade'].forEach(id=>document.getElementById(id).selectedIndex=0);
   sPhotos={};
-  resetPhotoGrid('s-photo-grid',['📷<br>Frente','📷<br>Traseira','📷<br>Lat. Esq.','📷<br>Lat. Dir.']);
+  resetGrid('s-photo-grid');
   const now=new Date();
   document.getElementById('s-data').value=now.toISOString().split('T')[0];
   document.getElementById('s-hora').value=now.toTimeString().slice(0,5);
@@ -496,15 +480,12 @@ window.clearSaida=function(){
   document.getElementById('btn-save-saida').disabled=false;
 };
 
-// ─── ENTRADA LISTA ────────────────────────────────────────
+// ─── ENTRADA LISTA ─────────────────────────────────────────
 function renderEntradaLista(){
-  const pendentes=checklists.filter(c=>!c.retornou);
+  const pend=checklists.filter(c=>!c.retornou);
   const el=document.getElementById('entrada-lista');
-  if(!pendentes.length){
-    el.innerHTML='<div class="empty"><span>🏁</span>Nenhum veículo em saída no momento.</div>';
-    return;
-  }
-  el.innerHTML=pendentes.map(c=>`
+  if(!pend.length){el.innerHTML='<div class="empty"><span>✅</span>Nenhum veículo em saída no momento.</div>';return;}
+  el.innerHTML=pend.map(c=>`
     <div class="vei-card">
       <div class="info">
         <strong>🚛 ${c.veiculoNome} — ${c.veiculoPlaca}</strong>
@@ -512,8 +493,7 @@ function renderEntradaLista(){
         <small>Atividade: ${c.atividade} | KM Saída: ${c.kmSaida}</small>
       </div>
       <button class="btn btn-success btn-sm" onclick="selectEntrada('${c._id}')">🏁 Dar Entrada</button>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 window.selectEntrada=function(docId){
@@ -530,55 +510,54 @@ window.selectEntrada=function(docId){
   const now=new Date();
   document.getElementById('e-data').value=now.toISOString().split('T')[0];
   document.getElementById('e-hora').value=now.toTimeString().slice(0,5);
-  document.getElementById('e-motorista-retorno').innerHTML='<option value="">Mesmo da saída ('+c.motoristaSaidaNome+')</option>'+
+  document.getElementById('e-motorista-retorno').innerHTML=
+    `<option value="">Mesmo da saída (${c.motoristaSaidaNome})</option>`+
     motoristas.map(m=>`<option value="${m._id}">${m.nome} (${m.id})</option>`).join('');
   ePhotos={};
-  resetPhotoGrid('e-photo-grid',['📷<br>Frente','📷<br>Traseira','📷<br>Lat. Esq.','📷<br>Lat. Dir.']);
-  document.getElementById('e-km').value='';
-  document.getElementById('e-km-perc').value='';
-  document.getElementById('e-tempo').value='';
-  document.getElementById('e-obs').value='';
+  resetGrid('e-photo-grid');
+  ['e-km','e-km-perc','e-tempo','e-obs'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('entrada-form-card').style.display='block';
   document.getElementById('entrada-form-card').scrollIntoView({behavior:'smooth'});
 };
 
 window.calcEntrada=function(){
-  const kmS=+currentChecklist?.kmSaida||0;
-  const kmR=+document.getElementById('e-km').value||0;
+  const kmS=+currentChecklist?.kmSaida||0, kmR=+document.getElementById('e-km').value||0;
   document.getElementById('e-km-perc').value=(kmS&&kmR&&kmR>=kmS)?kmR-kmS:'';
   const hs=currentChecklist?.hora, hr=document.getElementById('e-hora').value;
   if(hs&&hr){
     const [hh,mm]=hs.split(':').map(Number),[hh2,mm2]=hr.split(':').map(Number);
-    let diff=(hh2*60+mm2)-(hh*60+mm); if(diff<0) diff+=1440;
-    document.getElementById('e-tempo').value=`${Math.floor(diff/60)}h ${diff%60}min`;
+    let d=(hh2*60+mm2)-(hh*60+mm); if(d<0) d+=1440;
+    document.getElementById('e-tempo').value=`${Math.floor(d/60)}h ${d%60}min`;
   }
 };
 
 window.saveEntrada=async function(){
   if(!currentChecklist) return;
-  const get=id=>document.getElementById(id).value.trim();
-  const dataR=get('e-data'),horaR=get('e-hora'),kmR=get('e-km');
-  if(!dataR||!horaR||!kmR) return toast('⚠️ Preencha Data Retorno, Hora Retorno e KM Retorno.');
-  const motRId=get('e-motorista-retorno');
+  const g=id=>document.getElementById(id).value.trim();
+  const dataR=g('e-data'),horaR=g('e-hora'),kmR=g('e-km');
+  if(!dataR||!horaR||!kmR) return toast('⚠️ Preencha Data, Hora e KM de Retorno.');
+  const motRId=g('e-motorista-retorno');
   const motR=motRId?motoristas.find(m=>m._id===motRId)||{}:{nome:currentChecklist.motoristaSaidaNome,_id:currentChecklist.motoristaSaidaId};
   const btn=document.getElementById('btn-save-entrada');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Salvando...';
   try{
-    const fotos=await uploadPhotos(ePhotos,`checklists/${currentChecklist._id}/entrada`,'e-prog','e-fill');
+    const fotosEntrada=Object.values(ePhotos);
     await updateDoc(doc(db,'checklists',currentChecklist._id),{
-      retornou:true,
-      horaRetorno:horaR, dataRetorno:dataR,
+      retornou:true,dataRetorno:dataR,horaRetorno:horaR,
       kmRetorno:kmR,
       kmPercorrido:document.getElementById('e-km-perc').value,
       tempoGasto:document.getElementById('e-tempo').value,
       motoristaRetornoId:motR._id||currentChecklist.motoristaSaidaId,
       motoristaRetornoNome:motR.nome||currentChecklist.motoristaSaidaNome,
-      obsRetorno:get('e-obs'),
-      fotosEntrada:fotos
+      obsRetorno:g('e-obs'),
+      fotosEntrada
     });
     toast('✅ Entrada registrada com sucesso!');
     cancelEntrada();
-  }catch(e){toast('❌ Erro: '+e.message);}
+  }catch(e){
+    console.error(e);
+    toast('❌ Erro: '+e.message);
+  }
   btn.disabled=false; btn.innerHTML='🏁 Registrar Entrada';
 };
 
@@ -588,26 +567,23 @@ window.cancelEntrada=function(){
   ePhotos={};
 };
 
-// ─── DASHBOARD ────────────────────────────────────────────
+// ─── DASHBOARD ─────────────────────────────────────────────
 function renderDashboard(){
-  // veículos fora
   const out=checklists.filter(c=>!c.retornou);
   const tb1=document.getElementById('dash-out-tbody');
-  if(!out.length) tb1.innerHTML='<tr><td colspan="5"><div class="empty"><span>✅</span>Todos os veículos estão na empresa.</div></td></tr>';
-  else tb1.innerHTML=out.map(c=>`<tr><td>${c.veiculoNome}</td><td>${c.veiculoPlaca}</td><td>${c.motoristaSaidaNome}</td><td>${c.data} ${c.hora}</td><td>${c.atividade}</td></tr>`).join('');
-  // recentes
-  const tb2=document.getElementById('dash-tbody');
+  tb1.innerHTML=out.length?out.map(c=>`<tr><td>${c.veiculoNome}</td><td>${c.veiculoPlaca}</td><td>${c.motoristaSaidaNome}</td><td>${c.data} ${c.hora}</td><td>${c.atividade}</td></tr>`).join('')
+    :'<tr><td colspan="5"><div class="empty"><span>✅</span>Todos os veículos estão na empresa.</div></td></tr>';
   const rec=checklists.slice(0,8);
-  if(!rec.length) tb2.innerHTML='<tr><td colspan="5"><div class="empty"><span>📋</span>Nenhum registro.</div></td></tr>';
-  else tb2.innerHTML=rec.map(c=>`<tr>
+  const tb2=document.getElementById('dash-tbody');
+  tb2.innerHTML=rec.length?rec.map(c=>`<tr>
     <td>${c.data} ${c.hora}</td>
     <td>${c.veiculoNome}<br><small style="color:var(--muted)">${c.veiculoPlaca}</small></td>
     <td>${c.motoristaSaidaNome}</td><td>${c.atividade}</td>
     <td><span class="badge ${c.retornou?'badge-in':'badge-out'}">${c.retornou?'Retornou':'Em saída'}</span></td>
-  </tr>`).join('');
+  </tr>`).join(''):'<tr><td colspan="5"><div class="empty"><span>📋</span>Nenhum registro.</div></td></tr>';
 }
 
-// ─── MOTORISTAS ───────────────────────────────────────────
+// ─── MOTORISTAS ────────────────────────────────────────────
 window.saveMotorista=async function(){
   const id=document.getElementById('mot-id').value.trim();
   const nome=document.getElementById('mot-nome').value.trim();
@@ -616,18 +592,18 @@ window.saveMotorista=async function(){
   if(motoristas.find(m=>m.id===id)) return toast('⚠️ ID já cadastrado.');
   const btn=document.getElementById('btn-save-mot');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
-  try{ await addDoc(collection(db,'motoristas'),{id,nome,nomecompleto:nc}); ['mot-id','mot-nome','mot-nc'].forEach(f=>document.getElementById(f).value=''); toast('✅ Motorista cadastrado!'); }
-  catch(e){ toast('❌ '+e.message); }
+  try{await addDoc(collection(db,'motoristas'),{id,nome,nomecompleto:nc});['mot-id','mot-nome','mot-nc'].forEach(f=>document.getElementById(f).value='');toast('✅ Motorista cadastrado!');}
+  catch(e){toast('❌ '+e.message);}
   btn.disabled=false; btn.innerHTML='➕ Adicionar';
 };
-window.deleteMotorista=async function(docId){ if(!confirm('Remover?')) return; await deleteDoc(doc(db,'motoristas',docId)); toast('🗑 Removido.'); };
+window.deleteMotorista=async function(docId){if(!confirm('Remover?'))return;await deleteDoc(doc(db,'motoristas',docId));toast('🗑 Removido.');};
 function renderMotoristas(){
   const tb=document.getElementById('mot-tbody');
-  if(!motoristas.length){tb.innerHTML='<tr><td colspan="4"><div class="empty"><span>👤</span>Nenhum motorista.</div></td></tr>';return;}
-  tb.innerHTML=motoristas.map(m=>`<tr><td><b>${m.id}</b></td><td>${m.nome}</td><td>${m.nomecompleto}</td><td><button class="btn btn-danger btn-sm" onclick="deleteMotorista('${m._id}')">🗑</button></td></tr>`).join('');
+  tb.innerHTML=motoristas.length?motoristas.map(m=>`<tr><td><b>${m.id}</b></td><td>${m.nome}</td><td>${m.nomecompleto}</td><td><button class="btn btn-danger btn-sm" onclick="deleteMotorista('${m._id}')">🗑</button></td></tr>`).join('')
+    :'<tr><td colspan="4"><div class="empty"><span>👤</span>Nenhum motorista.</div></td></tr>';
 }
 
-// ─── VEÍCULOS ─────────────────────────────────────────────
+// ─── VEÍCULOS ──────────────────────────────────────────────
 window.saveVeiculo=async function(){
   const id=document.getElementById('vei-id').value.trim();
   const nome=document.getElementById('vei-nome').value.trim();
@@ -636,18 +612,18 @@ window.saveVeiculo=async function(){
   if(veiculos.find(v=>v.id===id)) return toast('⚠️ ID já cadastrado.');
   const btn=document.getElementById('btn-save-vei');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
-  try{ await addDoc(collection(db,'veiculos'),{id,nome,placa}); ['vei-id','vei-nome','vei-placa'].forEach(f=>document.getElementById(f).value=''); toast('✅ Veículo cadastrado!'); }
-  catch(e){ toast('❌ '+e.message); }
+  try{await addDoc(collection(db,'veiculos'),{id,nome,placa});['vei-id','vei-nome','vei-placa'].forEach(f=>document.getElementById(f).value='');toast('✅ Veículo cadastrado!');}
+  catch(e){toast('❌ '+e.message);}
   btn.disabled=false; btn.innerHTML='➕ Adicionar';
 };
-window.deleteVeiculo=async function(docId){ if(!confirm('Remover?')) return; await deleteDoc(doc(db,'veiculos',docId)); toast('🗑 Removido.'); };
+window.deleteVeiculo=async function(docId){if(!confirm('Remover?'))return;await deleteDoc(doc(db,'veiculos',docId));toast('🗑 Removido.');};
 function renderVeiculos(){
   const tb=document.getElementById('vei-tbody');
-  if(!veiculos.length){tb.innerHTML='<tr><td colspan="4"><div class="empty"><span>🚗</span>Nenhum veículo.</div></td></tr>';return;}
-  tb.innerHTML=veiculos.map(v=>`<tr><td><b>${v.id}</b></td><td>${v.nome}</td><td>${v.placa}</td><td><button class="btn btn-danger btn-sm" onclick="deleteVeiculo('${v._id}')">🗑</button></td></tr>`).join('');
+  tb.innerHTML=veiculos.length?veiculos.map(v=>`<tr><td><b>${v.id}</b></td><td>${v.nome}</td><td>${v.placa}</td><td><button class="btn btn-danger btn-sm" onclick="deleteVeiculo('${v._id}')">🗑</button></td></tr>`).join('')
+    :'<tr><td colspan="4"><div class="empty"><span>🚗</span>Nenhum veículo.</div></td></tr>';
 }
 
-// ─── SELECTS ──────────────────────────────────────────────
+// ─── SELECTS ───────────────────────────────────────────────
 function populateSaidaSelects(){
   document.getElementById('s-veiculo').innerHTML='<option value="">Selecione...</option>'+veiculos.map(v=>`<option value="${v._id}">${v.nome} — ${v.placa}</option>`).join('');
   document.getElementById('s-motorista').innerHTML='<option value="">Selecione...</option>'+motoristas.map(m=>`<option value="${m._id}">${m.nome} (${m.id})</option>`).join('');
@@ -657,7 +633,7 @@ function populateFilterSelects(){
   document.getElementById('f-mot').innerHTML='<option value="">Todos</option>'+motoristas.map(m=>`<option value="${m._id}">${m.nome}</option>`).join('');
 }
 
-// ─── RELATÓRIOS ───────────────────────────────────────────
+// ─── RELATÓRIOS ────────────────────────────────────────────
 window.renderRelatorios=function(){
   const fi=document.getElementById('f-ini').value,ff=document.getElementById('f-fim').value;
   const fv=document.getElementById('f-vei').value,fm=document.getElementById('f-mot').value;
@@ -667,8 +643,7 @@ window.renderRelatorios=function(){
   if(fv) data=data.filter(c=>c.veiculoId===fv);
   if(fm) data=data.filter(c=>c.motoristaSaidaId===fm||c.motoristaRetornoId===fm);
   const tb=document.getElementById('rel-tbody');
-  if(!data.length){tb.innerHTML='<tr><td colspan="14"><div class="empty"><span>📊</span>Nenhum registro.</div></td></tr>';return;}
-  tb.innerHTML=data.map(c=>`<tr>
+  tb.innerHTML=data.length?data.map(c=>`<tr>
     <td>${c.data}</td><td>${c.hora}</td><td>${c.horaRetorno||'—'}</td>
     <td>${c.veiculoNome}</td><td>${c.veiculoPlaca}</td>
     <td>${c.motoristaSaidaNome}</td><td>${c.motoristaRetornoNome||'—'}</td>
@@ -679,15 +654,15 @@ window.renderRelatorios=function(){
       <button class="btn btn-primary btn-sm" onclick="viewDetail('${c._id}')">👁</button>
       <button class="btn btn-danger btn-sm" onclick="deleteChecklist('${c._id}')">🗑</button>
     </td>
-  </tr>`).join('');
+  </tr>`).join(''):'<tr><td colspan="14"><div class="empty"><span>📊</span>Nenhum registro encontrado.</div></td></tr>';
 };
 
-window.deleteChecklist=async function(docId){ if(!confirm('Remover?')) return; await deleteDoc(doc(db,'checklists',docId)); toast('🗑 Removido.'); window.renderRelatorios(); };
+window.deleteChecklist=async function(docId){if(!confirm('Remover?'))return;await deleteDoc(doc(db,'checklists',docId));toast('🗑 Removido.');window.renderRelatorios();};
 
 window.viewDetail=function(docId){
   const c=checklists.find(r=>r._id===docId); if(!c) return;
   document.getElementById('modal-title').textContent=`${c.veiculoNome} — ${c.data}`;
-  const mkFotos=arr=>(arr||[]).map(u=>`<img src="${u}" style="width:100%;border-radius:8px;object-fit:cover">`).join('');
+  const mkF=arr=>(arr||[]).filter(Boolean).map(u=>`<img src="${u}" style="width:100%;border-radius:8px;object-fit:cover">`).join('');
   document.getElementById('modal-body').innerHTML=`
     <div class="form-grid">
       <div class="form-group"><label>Data</label><input readonly value="${c.data}"></div>
@@ -703,33 +678,33 @@ window.viewDetail=function(docId){
       <div class="form-group span2"><label>Obs. Saída</label><textarea readonly>${c.obsSaida||''}</textarea></div>
       <div class="form-group span2"><label>Obs. Retorno</label><textarea readonly>${c.obsRetorno||''}</textarea></div>
     </div>
-    ${c.fotosSaida?.length?`<p style="margin-top:12px;font-size:.8rem;font-weight:700;color:var(--muted)">FOTOS SAÍDA</p><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px">${mkFotos(c.fotosSaida)}</div>`:''}
-    ${c.fotosEntrada?.length?`<p style="margin-top:12px;font-size:.8rem;font-weight:700;color:var(--muted)">FOTOS ENTRADA</p><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px">${mkFotos(c.fotosEntrada)}</div>`:''}
+    ${c.fotosSaida?.length?`<p style="margin:12px 0 6px;font-size:.78rem;font-weight:700;color:var(--muted)">FOTOS SAÍDA</p><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">${mkF(c.fotosSaida)}</div>`:''}
+    ${c.fotosEntrada?.length?`<p style="margin:12px 0 6px;font-size:.78rem;font-weight:700;color:var(--muted)">FOTOS ENTRADA</p><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">${mkF(c.fotosEntrada)}</div>`:''}
   `;
   document.getElementById('modal-bg').classList.add('open');
 };
 window.closeModal=()=>document.getElementById('modal-bg').classList.remove('open');
 
-// ─── CSV ──────────────────────────────────────────────────
+// ─── CSV ───────────────────────────────────────────────────
 window.exportCSV=function(){
   const cols=['Data','Hora Saída','Hora Retorno','Veículo','Placa','Mot. Saída','Mot. Retorno','Atividade','KM Saída','KM Retorno','KM Percorrido','Tempo','Obs. Saída','Obs. Retorno','Status'];
   const rows=checklists.map(c=>[c.data,c.hora,c.horaRetorno||'',c.veiculoNome,c.veiculoPlaca,c.motoristaSaidaNome,c.motoristaRetornoNome||'',c.atividade,c.kmSaida,c.kmRetorno||'',c.kmPercorrido||'',c.tempoGasto||'',c.obsSaida||'',c.obsRetorno||'',c.retornou?'Retornou':'Em saída'].map(v=>`"${v}"`).join(','));
   const csv=[cols.join(','),...rows].join('\n');
-  const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
-  a.download='controle_frota.csv'; a.click();
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='controle_frota.csv';a.click();
 };
 
-// ─── HELPERS ──────────────────────────────────────────────
-function resetPhotoGrid(gridId,labels){
+// ─── HELPERS ───────────────────────────────────────────────
+function resetGrid(gridId){
   document.querySelectorAll('#'+gridId+' .photo-slot').forEach((slot,i)=>{
-    const img=slot.querySelector('img'); if(img) img.remove();
-    const del=slot.querySelector('.del-ph'); if(del) del.remove();
+    const img=slot.querySelector('img');if(img)img.remove();
+    const del=slot.querySelector('.del-ph');if(del)del.remove();
     slot.querySelector('span').style.display='';
-    slot.querySelector('span').innerHTML=labels[i];
+    slot.querySelector('span').textContent=PHOTO_LABELS[i];
   });
 }
 
-// ─── INIT ─────────────────────────────────────────────────
+// ─── INIT ──────────────────────────────────────────────────
 (function(){
   const now=new Date();
   document.getElementById('s-data').value=now.toISOString().split('T')[0];
