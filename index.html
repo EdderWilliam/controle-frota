@@ -281,7 +281,10 @@ input[type=file]{display:none}
   <div class="modal">
     <h3 id="modal-title">Detalhes</h3>
     <div id="modal-body"></div>
-    <div class="modal-actions"><button class="btn" style="background:var(--gray)" onclick="closeModal()">Fechar</button></div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="deleteChecklist(currentDetailId)">🗑 Excluir Registro</button>
+      <button class="btn" style="background:var(--gray)" onclick="closeModal()">Fechar</button>
+    </div>
   </div>
 </div>
 
@@ -662,16 +665,15 @@ window.renderRelatorios=function(){
     <td style="max-width:140px;white-space:pre-wrap;word-break:break-word">${c.obsSaida||'—'}</td>
     <td style="max-width:140px;white-space:pre-wrap;word-break:break-word">${c.obsRetorno||'—'}</td>
     <td><span class="badge ${c.retornou?'badge-in':'badge-out'}">${c.retornou?'Retornou':'Em saída'}</span></td>
-    <td style="display:flex;gap:4px">
-      <button class="btn btn-primary btn-sm" onclick="viewDetail('${c._id}')">👁</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteChecklist('${c._id}')">🗑</button>
-    </td>
+    <td><button class="btn btn-primary btn-sm" onclick="viewDetail('${c._id}')">👁 Detalhes</button></td>
   </tr>`).join(''):'<tr><td colspan="14"><div class="empty"><span>📊</span>Nenhum registro encontrado.</div></td></tr>';
 };
 
 window.deleteChecklist=async function(docId){if(!confirm('Remover?'))return;await deleteDoc(doc(db,'checklists',docId));toast('🗑 Removido.');window.renderRelatorios();};
 
+let currentDetailId=null;
 window.viewDetail=function(docId){
+  currentDetailId=docId;
   const c=checklists.find(r=>r._id===docId); if(!c) return;
   document.getElementById('modal-title').textContent=`${c.veiculoNome} — ${c.data}`;
   const mkF=arr=>(arr||[]).filter(Boolean).map(u=>`<img src="${u}" style="width:100%;border-radius:8px;object-fit:cover">`).join('');
@@ -695,7 +697,7 @@ window.viewDetail=function(docId){
   `;
   document.getElementById('modal-bg').classList.add('open');
 };
-window.closeModal=()=>document.getElementById('modal-bg').classList.remove('open');
+window.closeModal=()=>{document.getElementById('modal-bg').classList.remove('open');currentDetailId=null;};
 
 // ─── CSV ───────────────────────────────────────────────────
 window.exportCSV=function(){
