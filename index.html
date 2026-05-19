@@ -206,6 +206,7 @@ input[type=file]{display:none}
           <div class="photo-slot" onclick="openCamera('e',2)"><span>📷 Lat. Esq.</span></div>
           <div class="photo-slot" onclick="openCamera('e',3)"><span>📷 Lat. Dir.</span></div>
           <div class="photo-slot" onclick="openCamera('e',4)"><span>📷 Cabine</span></div>
+          <div class="photo-slot" onclick="openCamera('e',5)"><span>📷 Baú</span></div>
         </div>
       </div>
       <div class="section-div">Observações</div>
@@ -322,7 +323,7 @@ let sPhotos={}, ePhotos={}; // slot -> base64 string
 let currentChecklist=null;
 let camStream=null, camCtx='s', camSlot=0;
 
-const PHOTO_LABELS = ['📷 Frente','📷 Traseira','📷 Lat. Esq.','📷 Lat. Dir.','📷 Cabine'];
+const PHOTO_LABELS = ['📷 Frente','📷 Traseira','📷 Lat. Esq.','📷 Lat. Dir.','📷 Cabine','📷 Baú'];
 
 // ─── TOAST ─────────────────────────────────────────────────
 function toast(msg,dur=3500){
